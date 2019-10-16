@@ -2,15 +2,15 @@ IDS, = glob_wildcards("raw_illumina/{id}_1.fastq.gz")
 
 rule all:
 	input:
-		"fastqc_out/{sample}",
-		"quast_out/{sample}",
-		"mlst/{sample}.tsv",
-		"coverage_out/illumina/{sample}.txt",
-		"coverage_out/nanopore/{sample}.txt",
-		"abricate_out/ncbi/{sample}.tsv",
-		"abricate_out/vfdb/{sample}.tsv",
-		"prokka_out/{sample}",
-		"gc_out/{sample}.txt"
+		expand("fastqc_out/{sample}", sample = IDS),
+		expand("quast_out/{sample}", sample = IDS),
+		expand("mlst/{sample}.tsv", sample = IDS),
+		expand("coverage_out/illumina/{sample}.txt", sample = IDS),
+		expand("coverage_out/nanopore/{sample}.txt", sample = IDS),
+		expand("abricate_out/ncbi/{sample}.tsv", sample = IDS),
+		expand("abricate_out/vfdb/{sample}.tsv", sample = IDS),
+		expand("prokka_out/{sample}", sample = IDS),
+		expand("gc_out/{sample}.txt", sample = IDS)
 
 rule fastp:
 	input:
@@ -28,7 +28,7 @@ rule fastp:
 		compression_level = "9"
 	log:	
 		"logs/fastp/fastp_{sample}.log"
-	threads: 15
+	threads: 6
 	shell:
 		"""
 		fastp -w {threads} -z {params.compression_level} -i {input.fw} -o {output.fw} -I {input.rv} -O {output.rv} {params.general} --html {output.html} --json {output.json} 2>&1>{log}
@@ -36,11 +36,11 @@ rule fastp:
 
 rule filtlong:
 	input:
-		nanopore = "raw_nanopore/{sample}.fastq",
+		nanopore = "raw_nanopore/{sample}.fastq.gz",
 		fw = "trimmed_illumina/{sample}_ATQT_1.fastq.gz",
 		rv = "trimmed_illumina/{sample}_ATQT_2.fastq.gz"
 	output:
-		"trimmed_nanopore/{sample}.fastq"
+		"trimmed_nanopore/{sample}.fastq.gz"
 	conda:
 		"envs/filtlong.yaml"
 	params:
@@ -50,19 +50,19 @@ rule filtlong:
 		"logs/filtlong/{sample}.log"
 	shell:
 		"""
-		filtlong --target_bases {params.target_bases} --keep_percent {params.keep_percent} --illumina_1 {input.fw} --illumina_2 {input.rv} --trim {input.nanopore} | gzip > {output} 2>{log}
+		filtlong --target_bases {params.target_bases} --illumina_1 {input.fw} --illumina_2 {input.rv} --trim {input.nanopore} | gzip > {output} 2>{log}
 		"""
 
 rule fastqc:
 	input:
-		nanopore = "raw_nanopore/{sample}.fastq"
+		nanopore = "raw_nanopore/{sample}.fastq.gz"
 	output:
 		directory("fastqc_out/{sample}")
 	conda:
 		"envs/fastqc.yaml"
 	log:
 		"logs/fastqc/{sample}.log"
-	threads: 15
+	threads: 6
 	shell:
 		"""
 		fastqc -t {threads} --outdir {output} {input} 2>&1>{log}
@@ -70,7 +70,7 @@ rule fastqc:
 
 rule unicycler:
 	input:
-		nanopore = "raw_nanopore/{sample}.fastq",
+		nanopore = "raw_nanopore/{sample}.fastq.gz",
 		fw = "trimmed_illumina/{sample}_ATQT_1.fastq.gz",
 		rv = "trimmed_illumina/{sample}_ATQT_2.fastq.gz"
 	output:
@@ -81,10 +81,10 @@ rule unicycler:
 		outdir = "unicycler_out/{sample}"
 	log:
 		"logs/unicycler/{sample}.log"
-	threads: 15
+	threads: 6
 	shell:
 		"""
-		unicycler-runner.py -1 {input.fw} -2 {input.rv} --long {input.nanopore} -o {params.outdir} --threads {threads}
+		unicycler -1 {input.fw} -2 {input.rv} --long {input.nanopore} -o {params.outdir} --threads {threads}
 		"""
 
 rule quast:
@@ -166,7 +166,7 @@ rule prokka:
 		prefix = "{sample}"
 	log:
 		spades = "logs/prokka/{sample}.log"
-	threads: 15
+	threads: 6
 	shell:
 		"""
 		prokka {params.general} --force --compliant --centre XXX --outdir {output} --genus {params.genus} --species {params.species} --kingdom {params.kingdom} --cpus {threads} --prefix {params.prefix} {input.assembly} 2>&1>{log}
@@ -186,7 +186,7 @@ rule coverage_illumina:
 		minimap_x = "sr"
 	log:
 		"logs/coverage_illumina/{sample}.log"
-	threads: 15
+	threads: 6
 	shell:
 		"""
 		minimap2 -a -x {params.minimap_x} -t {threads} {input.assembly} {input.fw} {input.rv} | samtools sort -l 0 --threads {threads} | bedtools genomecov -d -ibam stdin | awk '{{t += $3}} END {{print t/NR}}' 1>{output} 2>{log}
@@ -204,7 +204,7 @@ rule coverage_nanopore:
 		minimap_x = "map-ont"
 	log:
 		"logs/coverage_nanopore/{sample}.log"
-	threads: 15
+	threads: 6
 	shell:
 		"""
 		minimap2 -a -x {params.minimap_x} -t {threads} {input.assembly} {input.reads} | samtools sort -l 0 --threads {threads} | bedtools genomecov -d -ibam stdin | awk '{{t += $3}} END {{print t/NR}}' 1>{output} 2>{log}

@@ -1,6 +1,9 @@
 #!/bin/bash
 
 cd /home/boas/experiments/MRA_Streptococcus_suis
+
+mkdir -p raw_illumina
+
 awk 'NR > 1 {print $2}' accessions.txt > list
 $HOME/tools/getSeqENA/getSeqENA.py -l list -o raw_illumina/
 

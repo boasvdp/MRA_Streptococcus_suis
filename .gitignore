@@ -1,2 +1,15 @@
-raw_illumina/*
-raw_nanopore/*
+raw_illumina
+raw_nanopore
+logs
+trimmed_illumina
+trimmed_nanopore
+fastp_out
+unicycler_out
+gc_out
+coverage_out
+prokka_out
+abricate_out
+fastqc_out
+mlst
+quast_out
+.snakemake
