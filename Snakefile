@@ -144,7 +144,7 @@ rule abricate_vfdb:
 	params:
 		minid = "95",
 		mincov = "60",
-		db = "ncbi"
+		db = "vfdb"
 	log:
 		"logs/abricate_vfdb/abricate_{sample}.log"
 	shell:
