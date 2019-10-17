@@ -65,6 +65,7 @@ rule fastqc:
 	threads: 6
 	shell:
 		"""
+		mkdir -p {output}
 		fastqc -t {threads} --outdir {output} {input} 2>&1>{log}
 		"""
 
