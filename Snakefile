@@ -1,3 +1,5 @@
+configfile: "config.yaml"
+
 IDS, = glob_wildcards("raw_illumina/{id}_1.fastq.gz")
 
 rule all:
@@ -24,8 +26,8 @@ rule fastp:
 	conda:
 		"envs/fastp.yaml"
 	params:
-		general = "--disable_length_filtering",
-		compression_level = "9"
+		general = config["fastp"]["general"],
+		compression_level = config["fastp"]["compression_level"]
 	log:	
 		"logs/fastp/fastp_{sample}.log"
 	threads: 6
@@ -44,8 +46,8 @@ rule filtlong:
 	conda:
 		"envs/filtlong.yaml"
 	params:
-		target_bases = "220000000",
-		keep_percent = "100"
+		target_bases = config["filtlong"]["target_bases"],
+		keep_percent = config["filtlong"]["keep_percent"]
 	log:
 		"logs/filtlong/{sample}.log"
 	shell:
@@ -124,9 +126,9 @@ rule abricate_ncbi:
 	conda:
 		"envs/abricate.yaml"
 	params:
-		minid = "95",
-		mincov = "60",
-		db = "ncbi"
+		minid = config["abricate_ncbi"]["minid"],
+		mincov = config["abricate_ncbi"]["mincov"],
+		db = config["abricate_ncbi"]["db"]
 	log:
 		"logs/abricate_ncbi/abricate_{sample}.log"
 	shell:
@@ -142,9 +144,9 @@ rule abricate_vfdb:
 	conda:
 		"envs/abricate.yaml"
 	params:
-		minid = "95",
-		mincov = "60",
-		db = "vfdb"
+		minid = config["abricate_vfdb"]["minid"],
+		mincov = config["abricate_vfdb"]["mincov"],
+		db = config["abricate_vfdb"]["db"]
 	log:
 		"logs/abricate_vfdb/abricate_{sample}.log"
 	shell:
@@ -160,10 +162,10 @@ rule prokka:
 	conda:
 		"envs/prokka.yaml"
 	params:
-		general = "--usegenus",
-		kingdom = "Bacteria",
-		genus = "Streptococcus",
-		species = "suis",
+		general = config["prokka"]["general"],
+		kingdom = config["prokka"]["kingdom"],
+		genus = config["prokka"]["genus"],
+		species = config["prokka"]["species"],
 		prefix = "{sample}"
 	log:
 		spades = "logs/prokka/{sample}.log"
@@ -184,7 +186,7 @@ rule coverage_illumina:
 	conda:
 		"envs/coverage.yaml"
 	params:
-		minimap_x = "sr"
+		minimap_x = config["coverage_illumina"]["minimap_x"]
 	log:
 		"logs/coverage_illumina/{sample}.log"
 	threads: 6
@@ -202,7 +204,7 @@ rule coverage_nanopore:
 	conda:
 		"envs/coverage.yaml"
 	params:
-		minimap_x = "map-ont"
+		minimap_x = config["coverage_nanopore"]["minimap_x"]
 	log:
 		"logs/coverage_nanopore/{sample}.log"
 	threads: 6

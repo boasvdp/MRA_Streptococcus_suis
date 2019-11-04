@@ -13,3 +13,5 @@ fastqc_out
 mlst
 quast_out
 .snakemake
+summary_isolates.sh
+summary.csv

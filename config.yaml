@@ -1,2 +1,29 @@
-foo:
-	bar: "foo"
+fastp:
+ general: "--disable_length_filtering"
+ compression_level: 9
+
+filtlong:
+ target_bases: "220000000"
+ keep_percent: "100"
+
+abricate_ncbi:
+ minid: "95"
+ mincov: "60"
+ db: "ncbi"
+
+abricate_vfdb:
+ minid: "95"
+ mincov: "60"
+ db: "vfdb"
+
+prokka:
+ general: "--usegenus"
+ kingdom: "Bacteria"
+ genus: "Streptococcus"
+ species: "suis"
+
+coverage_illumina:
+ minimap_x: "sr"
+
+coverage_nanopore:
+ minimap_x: "map-ont"
