@@ -38,7 +38,7 @@ rule fastp:
 
 rule filtlong:
 	input:
-		nanopore = "trimmed_nanopore/{sample}.fastq.gz",
+		nanopore = "raw_nanopore/{sample}.fastq.gz",
 		fw = "trimmed_illumina/{sample}_ATQT_1.fastq.gz",
 		rv = "trimmed_illumina/{sample}_ATQT_2.fastq.gz"
 	output:
@@ -73,7 +73,7 @@ rule fastqc:
 
 rule unicycler:
 	input:
-		nanopore = "raw_nanopore/{sample}.fastq.gz",
+		nanopore = "trimmed_nanopore/{sample}.fastq.gz",
 		fw = "trimmed_illumina/{sample}_ATQT_1.fastq.gz",
 		rv = "trimmed_illumina/{sample}_ATQT_2.fastq.gz"
 	output:
