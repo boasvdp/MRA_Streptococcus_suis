@@ -1,6 +1,6 @@
 configfile: "config.yaml"
 
-IDS, = glob_wildcards("raw_illumina/{id}_1.fastq.gz")
+IDS = ["861160","9401240","GD-0001","GD-0088","S10"]
 
 rule all:
 	input:
@@ -13,6 +13,22 @@ rule all:
 		expand("abricate_out/vfdb/{sample}.tsv", sample = IDS),
 		expand("prokka_out/{sample}", sample = IDS),
 		expand("gc_out/{sample}.txt", sample = IDS)
+
+rule sratools:
+	input:
+		"accessions.txt"
+	output:
+		fw = expand("raw_illumina/{sample}_1.fastq.gz", sample=IDS),
+		rv = expand("raw_illumina/{sample}_2.fastq.gz", sample=IDS),
+		long = expand("raw_nanopore/{sample}.fastq.gz", sample=IDS)
+	conda:
+		"envs/sratools.yaml"
+	log:
+		"logs/sratools.log"
+	shell:
+		"""
+		bash scripts/download_data.sh {input}
+		"""
 
 rule fastp:
 	input:
