@@ -17,3 +17,4 @@ quast_out
 .snakemake
 summary_isolates.sh
 summary.csv
+snakemake_MRA_Ssuis.txt
