@@ -1,6 +1,4 @@
 raw_illumina
-ill
-nan
 raw_nanopore
 logs
 trimmed_illumina
@@ -15,6 +13,3 @@ fastqc_out
 mlst
 quast_out
 .snakemake
-summary_isolates.sh
-summary.csv
-snakemake_MRA_Ssuis.txt

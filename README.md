@@ -22,6 +22,8 @@ Snakemake v. 5.7.1 was used to manage the workflow. Please see below for an over
 |Depth of coverage|Minimap2 + Samtools + BEDtools|
 
 ## Results
+The complete pipeline took ~3.5 hours on a 96GB node using 16 threads. 
+
 Five complete genomes were produced, all consisting of a closed chromosome without any extrachromosomal elements. PhiX data was still present in the Illumina data, which gave a second contig in all assemblies. These have been removed from the assemblies uploaded to the ENA. The accessions of the assemblies in ENA are:
 
 |Strain|Genome accession|
