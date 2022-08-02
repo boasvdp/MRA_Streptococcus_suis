@@ -1,6 +1,13 @@
 configfile: "config.yaml"
 
-IDS = ["861160","9401240","GD-0001","GD-0088","S10"]
+IDS = []
+
+with open("accessions.txt", "r") as file:
+  lines = file.readlines()
+
+for line in lines[1:]:
+  sample = line.split('\t')[0]
+  IDS.append(sample)
 
 rule all:
 	input:
